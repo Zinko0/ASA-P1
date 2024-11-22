@@ -36,22 +36,34 @@ int main(void){
 
     scanf("%d", &resultado);
 
-
     algoritmo(resultado, m, n);
 
 }
 
-char* algoritmo(int result, matrix m, int n){
+char* algoritmo(int result, matrix m, vector<int> expressao, int n){
     
-     matrix backtracking(n, vector<int>(n));
-     cube bottomUp (n, vector<stack<pair<int,int>>>(n)); 
-     
-     for(int i = 0; i < n; ++i){
-        
-         for (int j = 0; j < n; ++j){
+    matrix backtracking(n, vector<int>(n));
+    cube bottomUp (n, vector<stack<pair<int,int>>>(n)); 
+    //PARES (valor,k)
+    for (int f = 0; f < n; ++f) {
+        int i = 0;
+        int j = f;
+        while (j < n) {
+            //base condition
+            if(j == i){  //MUITO CUIDADO COM OS INDICES
+                bottomUp[i][j].push(make_pair(expressao[i],0));
+            }else{
+                for(int k = i; k < j; ++k){
+                    //ya vou para o churras 
+                }
+            }
 
-         }
-     }
+
+
+            ++i;
+            ++j;
+        }
+    }
    
 }
 
