@@ -6,7 +6,7 @@
 using namespace std;
 
 typedef vector<vector<int>> matrix;
-typedef vector<vector<stack<pair<int, int>>>> cube;
+typedef vector<vector<vector<pair<int, int>>>> cube;
 
 char* algoritmo(int resultado, matrix m, int n);
 
@@ -43,7 +43,7 @@ int main(void){
 char* algoritmo(int result, matrix m, vector<int> expressao, int n){
     
     matrix backtracking(n, vector<int>(n));
-    cube bottomUp (n, vector<stack<pair<int,int>>>(n)); 
+    cube bottomUp (n, vector<vector<pair<int,int>>>(n)); 
     //PARES (valor,k)
     for (int f = 0; f < n; ++f) {
         int i = 0;
@@ -51,10 +51,16 @@ char* algoritmo(int result, matrix m, vector<int> expressao, int n){
         while (j < n) {
             //base condition
             if(j == i){  //MUITO CUIDADO COM OS INDICES
-                bottomUp[i][j].push(make_pair(expressao[i],0));
+                bottomUp[i][j].push_back(make_pair(expressao[i],-1));
             }else{
                 for(int k = i; k < j; ++k){
-                    //ya vou para o churras 
+                    for(int l = 0; l < n; ++l){
+                        for(int r = 0; r < n; ++r){
+                            //estranho
+                            bottomUp[i][j].push_back(make_pair(m[bottomUp[i][j][l].first][bottomUp[k+1][j][r].first],k));
+                        }
+
+                    }
                 }
             }
 
