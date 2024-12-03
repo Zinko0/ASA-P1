@@ -7,23 +7,23 @@
 
 using namespace std;
 
-typedef vector<vector<int>> matrix;
-typedef vector<vector<vector<tuple<int,int,int,int>>>> cube;
+typedef vector<vector<unsigned short int>> matrix;
+typedef vector<vector<vector<tuple<unsigned short int,unsigned short int,unsigned short int,unsigned short int>>>> cube;
 
-void algoritmo(int resultado, matrix m, vector<int> expressao,int n);
-string backtracking(int i,int j,int result,cube bottomUp, vector<int> expression);
+void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short int> expressao,unsigned short int n);
+string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube bottomUp, vector<unsigned short int> expression);
 
 int main(void){
     ios::sync_with_stdio(0);
     cin.tie(0);
-    int n, n_numbers; // n = lado da matriz, n_numbers = quantidade de números na expressao
-    int resultado;
+    unsigned short int n, n_numbers; // n = lado da matriz, n_numbers = quantidade de números na expressao
+    unsigned short int resultado;
     
     cin >> n >> n_numbers;
     
 
-    vector<int> expressao(n_numbers);
-    matrix m(n, vector<int>(n, 0));
+    vector<unsigned short int> expressao(n_numbers);
+    matrix m(n, vector<unsigned short int>(n, 0));
 
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
@@ -50,15 +50,14 @@ int main(void){
     algoritmo(resultado, m, expressao ,n_numbers);
 }
 
-void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
+void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short int> expressao, unsigned short int n){
     
 
-    cube bottomUp(n, vector<vector<tuple<int, int, int, int>>>(n));
+    cube bottomUp(n, vector<vector<tuple<unsigned short int, unsigned short int, unsigned short int, unsigned short int>>>(n));
     //NOTA: criar um vetor vazio N para depois usa lo para verificar se um certo resultado já foi colocado na matriz bottomUp
     //TUPLOS (valor,k,left,right)
-
     int colocados = 0; //numero de resultados colocados na matriz
-    vector<int> resultados(n,0); //vetor para verificar se um certo resultado já foi colocado na matriz
+    vector<bool> resultados(n,false); //vetor para verificar se um certo resultado já foi colocado na matriz
     int resultado;
     for (int f = 0; f < n-1; ++f) { 
         int i = 0;
@@ -70,14 +69,16 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
             }
             else{
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-                    for(tuple <int,int,int,int> tuple1 : bottomUp[i][k]){ //talvez trocar
-                        for(tuple <int,int,int,int> tuple2 : bottomUp[k+1][j]){
-                            resultado = m[get<0>(tuple1)-1][get<0>(tuple2)-1];
+                    for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ //talvez trocar
+                        for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
+                            unsigned short int left_number = get<0>(tuple1);
+                            unsigned short int right_number = get<0>(tuple2);
+                            resultado = m[left_number-1][right_number-1];
                             if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
                             // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
-                                bottomUp[i][j].push_back(make_tuple(resultado, k,get<0>(tuple1),get<0>(tuple2)));
+                                bottomUp[i][j].push_back(make_tuple(resultado, k,left_number,right_number));
                                 colocados++;
-                                resultados[resultado-1] = 1;
+                                resultados[resultado-1] = true;
                             }
                             else if (colocados == n){
                                 k = i-1;
@@ -87,17 +88,19 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                 }
             }
             colocados = 0;
-            fill(resultados.begin(), resultados.end(), 0);
+            fill(resultados.begin(),resultados.end(),false);
             ++i;
             ++j;
         }
     }
     int i = 0, j = n-1;
     for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-        for(tuple <int,int,int,int> tuple1 : bottomUp[i][k]){ //talvez trocar
-            for(tuple <int,int,int,int> tuple2 : bottomUp[k+1][j]){
-                if(m[get<0>(tuple1)-1][get<0>(tuple2)-1] == final_result){ 
-                    bottomUp[i][j].push_back(make_tuple(final_result,k,get<0>(tuple1), get<0>(tuple2)));
+        for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ //talvez trocar
+            for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
+                unsigned short int left_number = get<0>(tuple1);
+                unsigned short int right_number = get<0>(tuple2);
+                if(m[left_number-1][right_number-1] == final_result){ 
+                    bottomUp[i][j].push_back(make_tuple(final_result,k,left_number,right_number));
                     printf("1\n");
                     printf("%s\n",backtracking(0,n-1,final_result,bottomUp,expressao).c_str());
                     return;
@@ -109,7 +112,7 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
     return;
 }
 
-string backtracking(int i,int j,int result,cube bottomUp, vector<int> expression){
+string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube bottomUp, vector<unsigned short int> expression){
 
     if(i == j){
         return to_string(expression[i]);
