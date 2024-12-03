@@ -1,7 +1,5 @@
-
 #include <string>
 #include <vector>
-#include <utility>
 #include <tuple>
 #include <iostream>
 
@@ -74,7 +72,7 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
                         unsigned short int left_number = get<0>(tuple1);
                         unsigned short int right_number = get<0>(tuple2);
                         resultado = m[left_number-1][right_number-1];
-                        if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
+                        if(resultados[resultado-1] == false){ //se o resultado nao foi colocado
                         // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
                             bottomUp[i][j].push_back(make_tuple(resultado, k,left_number,right_number));
                             colocados++;
@@ -117,7 +115,7 @@ string backtracking(unsigned short int i,unsigned short int j,unsigned short int
         return to_string(expression[i]);
     }
     for(tuple<unsigned short int,unsigned short int,unsigned short int,unsigned short int> f : bottomUp[i][j]){
-        if(get<0>(f) == result){
+        if(get<0>(f) == result){ //È AQUI ONDE ESTÀ O ERRO DEFINITIVAMENTE
             unsigned short int k = get<1>(f);
             return "(" + backtracking(i,k,get<2>(f),bottomUp,expression) + " " + backtracking(k+1,j,get<3>(f),bottomUp,expression) + ")";
         }
