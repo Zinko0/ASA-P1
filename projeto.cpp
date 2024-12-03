@@ -64,8 +64,7 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
                     for(tuple <int,int,int,int> tuple1 : bottomUp[k+1][j]){ //talvez trocar
                         for(tuple <int,int,int,int> tuple2 : bottomUp[i][k]){
-                            
-                            resultado = m[get<0>(tuple1)-1][get<0>(tuple2)-1];
+                            resultado = m[get<0>(tuple2)-1][get<0>(tuple1)-1];
                             if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
                             // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
                                 bottomUp[i][j].push_back(make_tuple(resultado, k,get<0>(tuple2),get<0>(tuple1)));
@@ -82,7 +81,7 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
                     for(tuple <int,int,int,int> tuple1 : bottomUp[k+1][j]){ //talvez trocar
                         for(tuple <int,int,int,int> tuple2 : bottomUp[i][k]){
-                            if(m[get<0>(tuple1)-1][get<0>(tuple2)-1] == final_result){ 
+                            if(m[get<0>(tuple2)-1][get<0>(tuple1)-1] == final_result){ 
                                 bottomUp[i][j].push_back(make_tuple(final_result,k,get<0>(tuple1), get<0>(tuple2)));
                                 printf("1\n");
                                 printf("(%s)\n",backtracking(0,n-1,final_result,bottomUp,expressao).c_str());
