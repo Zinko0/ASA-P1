@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 #include <string>
 #include <vector>
 #include <utility>
@@ -38,11 +38,10 @@ int main(void){
 
     if(n_numbers == 1){
         if(expressao[0] == resultado){
-            printf("1\n");
-            printf("%d\n",expressao[0]);
+            cout << "1" << endl << expressao[0] << endl;
         }
         else{
-            printf("0\n");
+            cout << "0" << endl;
         }
         return 0;
     }
@@ -59,30 +58,30 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
     int colocados = 0; //numero de resultados colocados na matriz
     vector<bool> resultados(n,false); //vetor para verificar se um certo resultado já foi colocado na matriz
     int resultado;
-    for (int f = 0; f < n-1; ++f) { 
+
+    //inicializar a diagonal da matriz bottomUp
+    for(int i = 0; i < n; ++i){
+        bottomUp[i][i].push_back(make_tuple(expressao[i],-1,-1,-1));
+    }
+
+    for (int f = 1; f < n-1; ++f) { 
         int i = 0;
         int j = f;
         while (j < n) {
-            //base condition
-            if(j == i){ 
-                bottomUp[i][j].push_back(make_tuple(expressao[i],-1,-1,-1));
-            }
-            else{
-                for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-                    for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ //talvez trocar
-                        for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
-                            unsigned short int left_number = get<0>(tuple1);
-                            unsigned short int right_number = get<0>(tuple2);
-                            resultado = m[left_number-1][right_number-1];
-                            if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
-                            // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
-                                bottomUp[i][j].push_back(make_tuple(resultado, k,left_number,right_number));
-                                colocados++;
-                                resultados[resultado-1] = true;
-                            }
-                            else if (colocados == n){
-                                k = i-1;
-                            }
+            for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
+                for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ 
+                    for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
+                        unsigned short int left_number = get<0>(tuple1);
+                        unsigned short int right_number = get<0>(tuple2);
+                        resultado = m[left_number-1][right_number-1];
+                        if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
+                        // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
+                            bottomUp[i][j].push_back(make_tuple(resultado, k,left_number,right_number));
+                            colocados++;
+                            resultados[resultado-1] = true;
+                        }
+                        else if (colocados == n){
+                            k = i-1;
                         }
                     }
                 }
@@ -95,20 +94,20 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
     }
     int i = 0, j = n-1;
     for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-        for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ //talvez trocar
+        for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ 
             for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
                 unsigned short int left_number = get<0>(tuple1);
                 unsigned short int right_number = get<0>(tuple2);
                 if(m[left_number-1][right_number-1] == final_result){ 
                     bottomUp[i][j].push_back(make_tuple(final_result,k,left_number,right_number));
-                    printf("1\n");
-                    printf("%s\n",backtracking(0,n-1,final_result,bottomUp,expressao).c_str());
+                    cout << "1" << endl;
+                    cout << backtracking(0,n-1,final_result,bottomUp,expressao) << endl;
                     return;
                 }
             }
         }
     }
-    printf("0\n");
+    cout << "0" << endl;
     return;
 }
 
@@ -117,12 +116,10 @@ string backtracking(unsigned short int i,unsigned short int j,unsigned short int
     if(i == j){
         return to_string(expression[i]);
     }
-    for(tuple<int,int,int,int> f : bottomUp[i][j]){
+    for(tuple<unsigned short int,unsigned short int,unsigned short int,unsigned short int> f : bottomUp[i][j]){
         if(get<0>(f) == result){
-            int left_number = get<2>(f); 
-            int right_number = get<3>(f);
-            int k = get<1>(f);
-            return "(" + backtracking(i,k,left_number,bottomUp,expression) + " " + backtracking(k+1,j,right_number,bottomUp,expression) + ")";
+            unsigned short int k = get<1>(f);
+            return "(" + backtracking(i,k,get<2>(f),bottomUp,expression) + " " + backtracking(k+1,j,get<3>(f),bottomUp,expression) + ")";
         }
     } 
     return "ERROR";

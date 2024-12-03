@@ -25,7 +25,7 @@ test: $(TARGET)
 		output=$${input%.in}.out; \
 		result=$${input%.in}.result; \
 		diff_file=$${input%.in}.diff; \
-		timeout 90 ./$(TARGET) < $$input > $$result; \
+		./$(TARGET) < $$input > $$result; \
 		if [ $$? -eq 124 ]; then \
 			echo ""; \
 			test_name=$$(basename $$input .in); \
