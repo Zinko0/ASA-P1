@@ -10,6 +10,7 @@ typedef vector<vector<int>> matrix;
 typedef vector<vector<vector<tuple<int,int,int,int>>>> cube;
 
 void algoritmo(int resultado, matrix m, vector<int> expressao,int n);
+string backtracking(int i,int j,int result,cube bottomUp, vector<int> expression, int n);
 
 int main(void){
 
@@ -40,33 +41,6 @@ int main(void){
     algoritmo(resultado, m, expressao ,n_numbers);
 
 }
-
-int backtracking(int i,int j,int result,cube bottomUp, vector<int> expression){
-    int size = expression.size();
-    int left_number;
-    int right_number;
-    int k;
-    if(size == 1){
-
-        return expression[0];
-    }
-    for(int f = 0; f < size; ++f){
-        if(get<0>(bottomUp[i][j][f]) == result){
-            left_number = get<2>(bottomUp[i][j][f]); 
-            right_number = get<3>(bottomUp[i][j][f]);
-            k = get<1>(bottomUp[i][j][f]);
-            vector<int> left_expression(expression.begin(), expression.begin() + k);
-            vector<int> right_expression(expression.begin() + k + 1, expression.end());
-            printf("k: %d,left_number: %d, right_number:%d\n",k,left_number,right_number);  
-    
-            printf("(%d  %d)",backtracking(0,k,left_number,bottomUp,left_expression),backtracking(k+1,size-1,right_number,bottomUp,right_expression));
-            break;
-        }
-    }
-
-    return 1000;
-}
-
 
 void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
     
@@ -105,7 +79,7 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                             
                             resultado = m[matrix_i-1][matrix_j-1];
                             printf("resultado: %d\n",resultado);
-                            if(resultados[resultado] == 0){ //se o resultado nao foi colocado
+                            if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
                             // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
                                 bottomUp[i][j][colocados] = make_tuple(resultado, k, matrix_i, matrix_j);
                                 colocados++;
@@ -119,8 +93,6 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                             }
                         }
                     }
-                    colocados = 0;
-                    fill(resultados.begin(), resultados.end(), 0);
                 }
             }else{
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
@@ -129,16 +101,46 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                             if(m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1] == final_result){ 
                                 bottomUp[i][j][0] = make_tuple(final_result,k,get<0>(bottomUp[i][k][l]), get<0>(bottomUp[k+1][j][r]));
                                 printf("(%d, %d, %d, %d) final\n",final_result, k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]));
-                                printf("(%s)",backtracking(0,n-1,final_result,bottomUp,expressao));
+                                printf("(%s)\n",backtracking(0,n-1,final_result,bottomUp,expressao,n));
                                 return;
                             }
                         }
                     }
                 }
             }
+            colocados = 0;
+            fill(resultados.begin(), resultados.end(), 0);
             ++i;
             ++j;
         }
     }
 }
 
+string backtracking(int i,int j,int result,cube bottomUp, vector<int> expression,int n){
+    int size = expression.size();
+    int left_number;
+    int right_number;
+    int k;
+
+    if(size == 1){
+        return to_string(expression[0]);
+    }
+    if(size == 2){
+        return "(" + to_string(expression[0]) + " " + to_string(expression[1]) + ")";
+    }
+    for(int f = 0; f < n; ++f){
+        if(get<0>(bottomUp[i][j][f]) == result){
+            left_number = get<2>(bottomUp[i][j][f]); 
+            right_number = get<3>(bottomUp[i][j][f]);
+            k = get<1>(bottomUp[i][j][f]);
+
+            printf("k: %d,left_number: %d, right_number:%d\n",k,left_number,right_number);  
+            break;
+        }
+    } 
+    vector<int> left_expression(expression.begin(), expression.begin() + k+1);
+    vector<int> right_expression(expression.begin() + k, expression.end());
+    
+
+    return backtracking(0,k,left_number,bottomUp,left_expression,n) + backtracking(k+1,j,right_number,bottomUp,right_expression,n);
+}
