@@ -45,7 +45,7 @@ int main(void){
 void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
     
 
-    cube bottomUp(n, vector<vector<tuple<int, int, int, int>>>(n, vector<tuple<int, int, int, int>>(n)));
+    cube bottomUp(n, vector<vector<tuple<int, int, int, int>>>(n));
     //NOTA: criar um vetor vazio N para depois usa lo para verificar se um certo resultado já foi colocado na matriz bottomUp
     //TUPLOS (valor,k,left,right)
 
@@ -59,36 +59,24 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
         while (j < n) {
             //base condition
             if(j == i){  //MUITO CUIDADO COM OS INDICES
-                bottomUp[i][j][0] = make_tuple(expressao[i],-1,-1,-1);
+                bottomUp[i][j].push_back(make_tuple(expressao[i],-1,-1,-1));
                 printf("(%d, %d, %d, %d) base\n",get<0>(bottomUp[i][j][0]), get<1>(bottomUp[i][j][0]), get<2>(bottomUp[i][j][0]), get<3>(bottomUp[i][j][0]));
             }
             else if( i != 0 || j != n-1){
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-                    for(int r = 0; r < n; ++r){
-                        for(int l = 0; l < n; ++l){
-                            printf("i: %d, j: %d, k: %d, l: %d, r: %d\n",i,j,k,l,r);
-                            matrix_i = get<0>(bottomUp[i][k][l]);
-                            matrix_j = get<0>(bottomUp[k+1][j][r]);
-                            if(matrix_i == 0){
-                                break;
-                            }
-                            else if (matrix_j == 0){
-                                r = n;
-                                break;
-                            }
+                    for(tuple <int,int,int,int> tuple1 : bottomUp[k+1][j]){ //talvez trocar
+                        for(tuple <int,int,int,int> tuple2 : bottomUp[i][k]){
                             
-                            resultado = m[matrix_i-1][matrix_j-1];
+                            resultado = m[get<0>(tuple1)-1][get<0>(tuple2)-1];
                             printf("resultado: %d\n",resultado);
                             if(resultados[resultado-1] == 0){ //se o resultado nao foi colocado
                             // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
-                                bottomUp[i][j][colocados] = make_tuple(resultado, k, matrix_i, matrix_j);
+                                bottomUp[i][j].push_back(make_tuple(resultado, k,get<0>(tuple2),get<0>(tuple1)));
                                 colocados++;
                                 resultados[resultado-1] = 1;
-                                printf("(%d, %d, %d, %d) : indice [%d][%d]\n",m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1], k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]),i,j);
+                                printf("(%d, %d, %d, %d) : indice [%d][%d]\n",m[get<0>(tuple1)-1][get<0>(tuple2)-1], k, get<0>(tuple2), get<0>(tuple1),i,j);
                             }
                             else if (colocados == n-1){
-                                l = n;
-                                r = n; //condiçaõ para sair do ciclo
                                 k = i-1;
                             }
                         }
@@ -96,11 +84,11 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                 }
             }else{
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
-                    for(int r = 0; r < n; ++r){
-                        for(int l = 0; l < n; ++l){
-                            if(m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1] == final_result){ 
-                                bottomUp[i][j][0] = make_tuple(final_result,k,get<0>(bottomUp[i][k][l]), get<0>(bottomUp[k+1][j][r]));
-                                printf("(%d, %d, %d, %d) final\n",final_result, k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]));
+                    for(tuple <int,int,int,int> tuple1 : bottomUp[k+1][j]){ //talvez trocar
+                        for(tuple <int,int,int,int> tuple2 : bottomUp[i][k]){
+                            if(m[get<0>(tuple1)-1][get<0>(tuple2)-1] == final_result){ 
+                                bottomUp[i][j].push_back(make_tuple(final_result,k,get<0>(tuple1), get<0>(tuple2)));
+                                printf("(%d, %d, %d, %d) final\n",final_result, k, get<0>(tuple1), get<0>(tuple2));
                                 printf("(%s)\n",backtracking(0,n-1,final_result,bottomUp,expressao,n));
                                 return;
                             }
