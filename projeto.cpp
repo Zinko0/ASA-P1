@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string>
 #include <vector>
 #include <utility>
 #include <tuple>
@@ -46,6 +47,7 @@ int backtracking(int i,int j,int result,cube bottomUp, vector<int> expression){
     int right_number;
     int k;
     if(size == 1){
+
         return expression[0];
     }
     for(int f = 0; f < size; ++f){
@@ -53,17 +55,16 @@ int backtracking(int i,int j,int result,cube bottomUp, vector<int> expression){
             left_number = get<2>(bottomUp[i][j][f]); 
             right_number = get<3>(bottomUp[i][j][f]);
             k = get<1>(bottomUp[i][j][f]);
-            
+            vector<int> left_expression(expression.begin(), expression.begin() + k);
+            vector<int> right_expression(expression.begin() + k + 1, expression.end());
+            printf("k: %d,left_number: %d, right_number:%d\n",k,left_number,right_number);  
+    
+            printf("(%d  %d)",backtracking(0,k,left_number,bottomUp,left_expression),backtracking(k+1,size-1,right_number,bottomUp,right_expression));
+            break;
         }
-        break;
     }
 
-    //NAO SEI SE ISTO É EFICIENTE
-    vector<int> left_expression(expression.begin(), expression.begin() + k);
-    vector<int> right_expression(expression.begin() + k + 1, expression.end());
-    
-    printf("(%d  %d)",backtracking(0,k,left_number,bottomUp,left_expression),backtracking(k+1,size,right_number,bottomUp,right_expression));
-    return 0;
+    return 1000;
 }
 
 
@@ -109,7 +110,7 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                                 bottomUp[i][j][colocados] = make_tuple(resultado, k, matrix_i, matrix_j);
                                 colocados++;
                                 resultados[resultado-1] = 1;
-                                printf("(%d, %d, %d, %d) intermedio\n",m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1], k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]));
+                                printf("(%d, %d, %d, %d) : indice [%d][%d]\n",m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1], k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]),i,j);
                             }
                             else if (colocados == n-1){
                                 l = n;
@@ -125,10 +126,10 @@ void algoritmo(int final_result, matrix m, vector<int> expressao, int n){
                 for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
                     for(int r = 0; r < n; ++r){
                         for(int l = 0; l < n; ++l){
-                            if(m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1] == final_result){ //podemos otimizar isto
+                            if(m[get<0>(bottomUp[i][k][l])-1][get<0>(bottomUp[k+1][j][r])-1] == final_result){ 
                                 bottomUp[i][j][0] = make_tuple(final_result,k,get<0>(bottomUp[i][k][l]), get<0>(bottomUp[k+1][j][r]));
                                 printf("(%d, %d, %d, %d) final\n",final_result, k, get<2>(bottomUp[i][j][l]), get<3>(bottomUp[i][j][r]));
-                                backtracking(0,n-1,final_result,bottomUp,expressao);
+                                printf("(%s)",backtracking(0,n-1,final_result,bottomUp,expressao));
                                 return;
                             }
                         }
