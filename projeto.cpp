@@ -1,4 +1,3 @@
-#include <string>
 #include <vector>
 #include <tuple>
 #include <iostream>
@@ -51,10 +50,11 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
     
 
     cube bottomUp(n, vector<vector<tuple<unsigned short int, unsigned short int, unsigned short int, unsigned short int>>>(n));
-    //NOTA: criar um vetor vazio N para depois usa lo para verificar se um certo resultado já foi colocado na matriz bottomUp
+
     //TUPLOS (valor,k,left,right)
     int colocados = 0; //numero de resultados colocados na matriz
-    vector<bool> resultados(n,false); //vetor para verificar se um certo resultado já foi colocado na matriz
+    int results_size = m.size();
+    vector<bool> resultados(results_size,true); //vetor para verificar se um certo resultado já foi colocado na matriz
     int resultado;
 
     //inicializar a diagonal da matriz bottomUp
@@ -72,20 +72,20 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
                         unsigned short int left_number = get<0>(tuple1);
                         unsigned short int right_number = get<0>(tuple2);
                         resultado = m[left_number-1][right_number-1];
-                        if(resultados[resultado-1] == false){ //se o resultado nao foi colocado
+                        if(resultados[resultado-1]){ //se o resultado nao foi colocado
                         // elemento L da casa [i][k] da matriz a (+) elemento R da casa [k+1][j] da matriz e a colocar na casa [i][j] da matriz  
                             bottomUp[i][j].push_back(make_tuple(resultado, k,left_number,right_number));
                             colocados++;
-                            resultados[resultado-1] = true;
+                            resultados[resultado-1] = false;
                         }
-                        else if (colocados == n){
+                        else if (colocados == results_size){
                             k = i-1;
                         }
                     }
                 }
             }
             colocados = 0;
-            fill(resultados.begin(),resultados.end(),false);
+            fill(resultados.begin(),resultados.end(),true);
             ++i;
             ++j;
         }

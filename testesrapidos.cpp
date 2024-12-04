@@ -11,26 +11,38 @@ typedef vector<vector<vector<pair<int, int>>>> cube;
 
 
 int main(void){
-    int n = 10;
+    int n = 100;
     int counter = 1;
     matrix m(n, vector<int>(n, 0));
-    for (int f = 0; f < n-1; ++f){
+for(int i = 0; i < n; ++i){
+
+        m[i][i] = counter;
+        counter++;
+        
+    }
+
+    for (int f = 1; f < n-1; ++f) { 
         int i = 0;
         int j = f;
-        while (j < n){
-            m[i][j] = counter;
-            ++counter;
+        while (j < n) {
+            m[i][j]= counter;
             ++i;
             ++j;
+            counter++;
         }
     }
-    for (int i = 0; i < n; ++i){
-        for (int j = 0; j < n; ++j){
+
+    int i = 0, j = n-1;
+    for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
+        m[i][j] = counter;
+    }
+
+    for(int i = 0; i<n; ++i){
+        for(int j = 0; j<n; ++j){
             printf("%d ", m[i][j]);
         }
         printf("\n");
     }
-    return 0;
 
 }
 
