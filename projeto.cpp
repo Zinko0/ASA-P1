@@ -7,8 +7,8 @@ using namespace std;
 typedef vector<vector<unsigned short int>> matrix;
 typedef vector<vector<vector<tuple<unsigned short int,unsigned short int,unsigned short int,unsigned short int>>>> cube;
 
-void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short int> expressao,unsigned short int n);
-string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube bottomUp, vector<unsigned short int> expression);
+void algoritmo(unsigned short int final_result, matrix &m, vector<unsigned short int> &expressao,unsigned short int n);
+string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube &bottomUp, vector<unsigned short int> &expression);
 
 int main(void){
     ios::sync_with_stdio(0);
@@ -42,11 +42,11 @@ int main(void){
         }
         return 0;
     }
-
     algoritmo(resultado, m, expressao ,n_numbers);
+    return 0;
 }
 
-void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short int> expressao, unsigned short int n){
+void algoritmo(unsigned short int final_result, matrix &m, vector<unsigned short int> &expressao, unsigned short int n){
     
 
     cube bottomUp(n, vector<vector<tuple<unsigned short int, unsigned short int, unsigned short int, unsigned short int>>>(n));
@@ -59,7 +59,7 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
 
     //inicializar a diagonal da matriz bottomUp
     for(int i = 0; i < n; ++i){
-        bottomUp[i][i].push_back(make_tuple(expressao[i],-1,-1,-1));
+        bottomUp[i][i].push_back(make_tuple(expressao[i],0,0,0));
     }
 
     for (int f = 1; f < n-1; ++f) { 
@@ -90,16 +90,15 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
             ++j;
         }
     }
-    int i = 0, j = n-1;
+    int i = 0 , j = n-1;
     for(int k = j - 1; k >= i; --k){ //começar o algoritmo com o maior K 
         for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple1 : bottomUp[i][k]){ 
             for(tuple <unsigned short int,unsigned short int,unsigned short int,unsigned short int> tuple2 : bottomUp[k+1][j]){
                 unsigned short int left_number = get<0>(tuple1);
                 unsigned short int right_number = get<0>(tuple2);
-                if(m[left_number-1][right_number-1] == final_result){ 
-                    bottomUp[i][j].push_back(make_tuple(final_result,k,left_number,right_number));
-                    cout << "1" << endl;
-                    cout << backtracking(0,n-1,final_result,bottomUp,expressao) << endl;
+                if(m[left_number-1][right_number-1] == final_result){
+                    bottomUp[i][j].push_back(make_tuple(final_result, k,left_number,right_number));
+                    cout << "1" << endl << backtracking(0,n-1,final_result,bottomUp,expressao) << endl;
                     return;
                 }
             }
@@ -109,16 +108,16 @@ void algoritmo(unsigned short int final_result, matrix m, vector<unsigned short 
     return;
 }
 
-string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube bottomUp, vector<unsigned short int> expression){
+string backtracking(unsigned short int i,unsigned short int j,unsigned short int result,cube &bottomUp, vector<unsigned short int> &expression){
 
     if(i == j){
         return to_string(expression[i]);
     }
     for(tuple<unsigned short int,unsigned short int,unsigned short int,unsigned short int> f : bottomUp[i][j]){
-        if(get<0>(f) == result){ //È AQUI ONDE ESTÀ O ERRO DEFINITIVAMENTE
+        if(get<0>(f) == result){ 
             unsigned short int k = get<1>(f);
             return "(" + backtracking(i,k,get<2>(f),bottomUp,expression) + " " + backtracking(k+1,j,get<3>(f),bottomUp,expression) + ")";
         }
     } 
-    return "ERROR";
+    return "";
 }
